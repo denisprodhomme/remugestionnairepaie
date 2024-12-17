@@ -1,0 +1,53 @@
+/* Importer la police Roboto depuis Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+/* Appliquer la police Roboto à tout le texte de l'application */
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Vous pouvez également appliquer la police à des éléments spécifiques si nécessaire */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Roboto', sans-serif;
+}
+
+
+/* Style de test pour vérifier si le CSS est lu */
+:root {
+
+    --primaryColor: ##6ca5ff;
+}
+
+p {
+    font-family: 'Roboto', sans-serif;
+    color: var(--primaryColor)
+}
+
+.st-d7 {
+    background-color: #ff9e6c;
+}
+
+.st-ca {
+    background-color: #ff9e6c;
+}
+.st-c2 {
+    background-color: #ff9e6c;
+}
+
+/* Centrer les cartes */
+.metric-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: auto;
+}
+
+.metric-card .title {
+    text-align: center;
+}
+
+.metric-card .content {
+    text-align: center;
+}
