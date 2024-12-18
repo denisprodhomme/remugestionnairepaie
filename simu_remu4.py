@@ -25,6 +25,29 @@ tabs = st.tabs(["Simulateur de Rémunération", "Présentation"])
 def format_number_with_space(number):
     return f"{number:,.0f}".replace(",", " ")
 
+# Initialiser l'état de l'application
+if 'show_additional_filters' not in st.session_state:
+    st.session_state.show_additional_filters = False
+
+# Liste des critères principaux dans l'ordre souhaité
+principal_filters = [
+    ('Poste', 'Poste'),
+    ('Expérience fonction', 'Expérience fonction'),
+    ('Structure', 'Structure'),
+    ('Localisation', 'Localisation')
+]
+
+# Liste des critères supplémentaires dans l'ordre souhaité
+additional_filters = [
+    ('Taille Société', 'Taille Société'),
+    ('Nbre de CCN', 'Nbre de CCN'),
+    ('Nbre Bulletins Produits', 'Nbre Bulletins Produits'),
+    ('Anglais dans votre quotidien pro ?', 'Anglais dans votre quotidien pro ?'),
+    ('Management', 'Management'),
+    ('Volume de paies supervisées', 'Volume de paies supervisées'),
+    ('Nbre de personnes supervisées', 'Nbre de personnes supervisées')
+]
+
 # Page Simulateur de Rémunération
 def page_simulateur():
     st.title('Simulateur de Rémunération dans le domaine de la Paie en France')
@@ -39,49 +62,36 @@ def page_simulateur():
 
     with filter_col1:
         st.subheader("Filtres principaux")
-        poste = st.multiselect('Poste', df['Poste'].unique(), default=[df['Poste'].unique()[0]])
-        experience = st.multiselect('Expérience fonction', df['Expérience fonction'].unique(), default=df['Expérience fonction'].unique())
-        structure = st.multiselect('Structure', df['Structure'].unique(), default=[df['Structure'].unique()[0]])
-        region = st.multiselect('Localisation', df['Localisation'].unique(), default=df['Localisation'].unique())
+        filter_selections = {}
+        for label, column in principal_filters:
+            filter_selections[column] = st.multiselect(label, df[column].unique(), default=df[column].unique())
 
         # Bouton pour afficher les filtres supplémentaires
         if st.button("Ajouter des critères supplémentaires"):
             st.session_state.show_additional_filters = True
-        else:
-            st.session_state.show_additional_filters = False
 
     with filter_col2:
-        if 'show_additional_filters' in st.session_state and st.session_state.show_additional_filters:
+        if st.session_state.show_additional_filters:
             st.subheader("Filtres supplémentaires")
-            taille_societe = st.multiselect('Taille Société', df['Taille Société'].unique(), default=df['Taille Société'].unique())
-            nombre_ccn = st.multiselect('Nbre de CCN', df['Nbre de CCN'].unique(), default=df['Nbre de CCN'].unique())
-            nbre_bull_prod = st.multiselect('Nbre Bulletins Produits', df['Nbre Bulletins Produits'].unique(), default=df['Nbre Bulletins Produits'].unique())
-            anglais = st.multiselect('Anglais dans votre quotidien pro ?', df['Anglais dans votre quotidien pro ?'].unique(), default=df['Anglais dans votre quotidien pro ?'].unique())
-            Management = st.multiselect('Management', df['Management'].unique(), default=df['Management'].unique())
-            volume_supervise = st.multiselect('Volume de paies supervisées', df['Volume de paies supervisées'].unique(), default=df['Volume de paies supervisées'].unique())
-            nombre_supervise = st.multiselect('Nbre de personnes supervisées', df['Nbre de personnes supervisées'].unique(), default=df['Nbre de personnes supervisées'].unique())
+            for label, column in additional_filters:
+                filter_selections[column] = st.multiselect(label, df[column].unique(), default=df[column].unique())
         else:
-            taille_societe = df['Taille Société'].unique()
-            nombre_ccn = df['Nbre de CCN'].unique()
-            nbre_bull_prod = df['Nbre Bulletins Produits'].unique()
-            anglais = df['Anglais dans votre quotidien pro ?'].unique()
-            Management = df['Management'].unique()
-            volume_supervise = df['Volume de paies supervisées'].unique()
-            nombre_supervise = df['Nbre de personnes supervisées'].unique()
+            for label, column in additional_filters:
+                filter_selections[column] = df[column].unique()
 
     # Filtrer le DataFrame en fonction des choix de l'utilisateur
     filtered_df = df[
-        (df['Poste'].isin(poste)) &
-        (df['Expérience fonction'].isin(experience)) &
-        (df['Structure'].isin(structure)) &
-        (df['Taille Société'].isin(taille_societe)) &
-        (df['Nbre de CCN'].isin(nombre_ccn)) &
-        (df['Nbre Bulletins Produits'].isin(nbre_bull_prod)) &
-        (df['Anglais dans votre quotidien pro ?'].isin(anglais)) &
-        (df['Localisation'].isin(region)) &
-        (df['Management'].isin(Management)) &
-        (df['Volume de paies supervisées'].isin(volume_supervise)) &
-        (df['Nbre de personnes supervisées'].isin(nombre_supervise))
+        (df['Poste'].isin(filter_selections['Poste'])) &
+        (df['Expérience fonction'].isin(filter_selections['Expérience fonction'])) &
+        (df['Structure'].isin(filter_selections['Structure'])) &
+        (df['Taille Société'].isin(filter_selections['Taille Société'])) &
+        (df['Nbre de CCN'].isin(filter_selections['Nbre de CCN'])) &
+        (df['Nbre Bulletins Produits'].isin(filter_selections['Nbre Bulletins Produits'])) &
+        (df['Anglais dans votre quotidien pro ?'].isin(filter_selections['Anglais dans votre quotidien pro ?'])) &
+        (df['Localisation'].isin(filter_selections['Localisation'])) &
+        (df['Management'].isin(filter_selections['Management'])) &
+        (df['Volume de paies supervisées'].isin(filter_selections['Volume de paies supervisées'])) &
+        (df['Nbre de personnes supervisées'].isin(filter_selections['Nbre de personnes supervisées']))
     ]
 
     # Calculer la rémunération moyenne, minimale, maximale et médiane
