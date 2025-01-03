@@ -32,20 +32,20 @@ if 'show_additional_filters' not in st.session_state:
 # Liste des critères principaux dans l'ordre souhaité
 principal_filters = [
     ('Poste', 'Poste'),
-    ('Expérience fonction', 'Expérience fonction'),
+    ('Expérience fonction', 'Exp2'),
     ('Structure', 'Structure'),
     ('Localisation', 'Localisation')
 ]
 
 # Liste des critères supplémentaires dans l'ordre souhaité
 additional_filters = [
-    ('Taille Société', 'Taille Société'),
-    ('Nbre de CCN', 'Nbre de CCN'),
-    ('Nbre Bulletins Produits', 'Nbre Bulletins Produits'),
+    ('Taille Société', 'Taille2'),
+    ('Nbre de CCN', 'CCN2'),
+    ('Nbre Bulletins Produits', 'Bull2'),
     ('Anglais dans votre quotidien pro ?', 'Anglais dans votre quotidien pro ?'),
     ('Management', 'Management'),
-    ('Volume de paies supervisées', 'Volume de paies supervisées'),
-    ('Nbre de personnes supervisées', 'Nbre de personnes supervisées')
+    ('Volume de paies supervisées', 'Volume2'),
+    ('Nbre de personnes supervisées', 'Pers2')
 ]
 
 # Page Simulateur de Rémunération
@@ -64,7 +64,8 @@ def page_simulateur():
         st.subheader("Filtres principaux")
         filter_selections = {}
         for label, column in principal_filters:
-            filter_selections[column] = st.multiselect(label, df[column].unique(), default=df[column].unique())
+            options = sorted(df[column].astype(str).unique())
+            filter_selections[column] = st.multiselect(label, options, default=options)
 
         # Bouton pour afficher les filtres supplémentaires
         if st.button("Ajouter des critères supplémentaires"):
@@ -74,7 +75,8 @@ def page_simulateur():
         if st.session_state.show_additional_filters:
             st.subheader("Filtres supplémentaires")
             for label, column in additional_filters:
-                filter_selections[column] = st.multiselect(label, df[column].unique(), default=df[column].unique())
+                options = sorted(df[column].astype(str).unique())
+                filter_selections[column] = st.multiselect(label, options, default=options)
         else:
             for label, column in additional_filters:
                 filter_selections[column] = df[column].unique()
@@ -82,16 +84,16 @@ def page_simulateur():
     # Filtrer le DataFrame en fonction des choix de l'utilisateur
     filtered_df = df[
         (df['Poste'].isin(filter_selections['Poste'])) &
-        (df['Expérience fonction'].isin(filter_selections['Expérience fonction'])) &
+        (df['Exp2'].isin(filter_selections['Exp2'])) &
         (df['Structure'].isin(filter_selections['Structure'])) &
-        (df['Taille Société'].isin(filter_selections['Taille Société'])) &
-        (df['Nbre de CCN'].isin(filter_selections['Nbre de CCN'])) &
-        (df['Nbre Bulletins Produits'].isin(filter_selections['Nbre Bulletins Produits'])) &
+        (df['Taille2'].isin(filter_selections['Taille2'])) &
+        (df['CCN2'].isin(filter_selections['CCN2'])) &
+        (df['Bull2'].isin(filter_selections['Bull2'])) &
         (df['Anglais dans votre quotidien pro ?'].isin(filter_selections['Anglais dans votre quotidien pro ?'])) &
         (df['Localisation'].isin(filter_selections['Localisation'])) &
         (df['Management'].isin(filter_selections['Management'])) &
-        (df['Volume de paies supervisées'].isin(filter_selections['Volume de paies supervisées'])) &
-        (df['Nbre de personnes supervisées'].isin(filter_selections['Nbre de personnes supervisées']))
+        (df['Volume2'].isin(filter_selections['Volume2'])) &
+        (df['Pers2'].isin(filter_selections['Pers2']))
     ]
 
     # Calculer la rémunération moyenne, minimale, maximale et médiane
